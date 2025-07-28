@@ -25,15 +25,9 @@ jobs:
             - name: Set Node.js v20
               id: setup-node
               uses: actions/setup-node@v4
-              with:
-                  node-version-file: ".nvmrc"
-                  cache: "npm"
 
             - name: Install dependencies
               run: npm ci
-
-            - name: Setup environment
-              run: cp .env.example .env
 
             - name: Build project
               run: npm run build
