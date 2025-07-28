@@ -1,0 +1,45 @@
+name: Datadog CI
+
+on:
+    pull_request:
+        branches: [main]
+#    push:
+#        branches: [main]
+
+jobs:
+    upload-sourcemaps:
+        name: Upload Sourcemaps to Datadog
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Log inputs
+              run: |
+                  echo "Current Branch: ${{ github.ref }}"
+                  echo "Repository default branch: ${{ github.event.repository.default_branch }}"
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.ref }}
+
+            - name: Set Node.js v20
+              id: setup-node
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: ".nvmrc"
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Setup environment
+              run: cp .env.example .env
+
+            - name: Build project
+              run: npm run build
+              env:
+                  DATADOG_CI: true
+
+            - name: Log release version
+              run: | 
+                echo "Release version: production-${{ github.sha }}"
